@@ -258,11 +258,23 @@ let renderTweets = (tweetObj, uid)=> {
     });
   });
 
-  $("#likebutton").on("click", ()=>{
-    var user = firebase.auth().currentUser;
-    var tweetRef = firebase.database().ref("tweets/");
-    toggleLike(tweetRef, user.uid);
-    console.log("trying to like tweet");
+  let tweetRef = firebase.database().ref('tweets/');
+  tweetRef.on("child_added", (ss)=>{
+
+    let userRef = firebase.database().ref('users/');
+    let tweetObj = ss.val();
+
+    userRef.child(tweetObj.author).get().then((snapshot) =>{
+      let userObj = snapshot.val();
+      console.log(userObj);
+      renderTweet(tweetObj, ss.key, userObj);
+        $(".like-button").off("click");
+        $(".like-button").on("click", (evt)=>{
+        let clickedTweet = $(evt.currentTarget).attr("data-tweetid");
+        let likesRef = firebase.database().ref("/likes").child(clickedTweet);
+        toggleLike(likesRef, uid);
+      });
+    });
   }); 
 }
 
