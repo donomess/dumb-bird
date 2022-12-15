@@ -224,9 +224,16 @@ let homePage = (currentUser)=>{
       var length = $(this).val().length;
       var length = maxlength - length;
       $("#charsleft").text(length);
-    })
-  })
-}
+    });
+  });
+
+  //actually show the tweets donovan jesus christ
+  let tweetRef = firebase.database().ref('/tweets/');
+  tweetRef.on("child_added", (ss)=>{
+    let tweetObj = ss.val();
+    renderTweets(tweetObj, ss.key);
+  });
+};
 
 //Render tweets? Thanks to Zoe V on helping explain some of this.
 let renderTweets = (tweetObj, uid)=> {
