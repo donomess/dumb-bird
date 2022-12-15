@@ -202,7 +202,7 @@ let homePage = (currentUser)=>{
     var user = firebase.auth().currentUser;
     var userRef = firebase.database().ref().child("/users/" + user.uid + "/tweets/").push();
     var tweetRef = firebase.database().ref("tweets/").push();
-    date = Date.now();
+    date = new Date().toLocaleString();
     message = $("#tweetcontent").val();
     const aTweet = {
       "content" : message,
@@ -244,9 +244,9 @@ let renderTweets = (tweetObj, uid)=> {
       <div class= "card mb-3 tweet" data-uid="${uid}" style="max-width:600px;">
         <div class="row g-0">
           <div class="card-body">
-            <h4 class = "card-title">Tweeted by: ${tweetObj.author}</h4>
+            <h4 class = "card-title">Tweeted by: ${tweetObj.author.email}</h4>
             <p class = "card-text">${tweetObj.content}</p>
-            <button class = "like-button" data-tweetid="${uid}">${tweetObj.likes} Likes</button>
+            <button class = "like-button" id = "like-button" data-tweetid="${uid}">${tweetObj.likes} Likes</button>
             <small>Tweet date: ${tweetObj.date}</small>
           </div>
         </div>
@@ -257,6 +257,13 @@ let renderTweets = (tweetObj, uid)=> {
       $(`.like-button[data-tweetid=${uid}]`).html(`❤️ ${ss.val() || 0} Likes`);
     });
   });
+
+  $("#likebutton").on("click", ()=>{
+    var user = firebase.auth().currentUser;
+    var tweetRef = firebase.database().ref("tweets/");
+    toggleLike(tweetRef, user.uid);
+    console.log("trying to like tweet");
+  }); 
 }
 
 //Like tweets - mostly copied your code for likes tbh
